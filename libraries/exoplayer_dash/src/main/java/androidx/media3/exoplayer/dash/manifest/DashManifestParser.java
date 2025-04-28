@@ -586,7 +586,7 @@ public class DashManifestParser extends DefaultHandler
 
   public void set_default_kid(String default_kid) {
      this.defaultKid_value = default_kid;
-   }
+  }
    
   /**
    * Parses a ContentProtection element.
@@ -610,12 +610,9 @@ public class DashManifestParser extends DefaultHandler
         case "urn:mpeg:dash:mp4protection:2011":
           schemeType = xpp.getAttributeValue(null, "value");
           String defaultKid = XmlPullParserUtil.getAttributeValueIgnorePrefix(xpp, "default_KID");
-          if (!TextUtils.isEmpty(defaultKid)){
-              defaultKid = defaultKid_value;
-          }
-          if (!TextUtils.isEmpty(defaultKid)
-              && !"00000000-0000-0000-0000-000000000000".equals(defaultKid)) {
-            String[] defaultKidStrings = defaultKid.split("\\s+");
+          if (!TextUtils.isEmpty(defaultKid_value )
+              && !"00000000-0000-0000-0000-000000000000".equals(defaultKid_value )) {
+            String[] defaultKidStrings = defaultKid_value .split("\\s+");
             UUID[] defaultKids = new UUID[defaultKidStrings.length];
             for (int i = 0; i < defaultKidStrings.length; i++) {
               defaultKids[i] = UUID.fromString(defaultKidStrings[i]);
