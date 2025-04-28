@@ -64,6 +64,7 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 import org.xmlpull.v1.XmlSerializer;
+import android.content.SharedPreferences;
 
 /** A parser of media presentation description files. */
 @UnstableApi
@@ -71,7 +72,6 @@ public class DashManifestParser extends DefaultHandler
     implements ParsingLoadable.Parser<DashManifest> {
 
   private static final String TAG = "MpdParser";
-  public String defaultKid_value = "";
   private static final Pattern FRAME_RATE_PATTERN = Pattern.compile("(\\d+)(?:/(\\d+))?");
 
   private static final Pattern CEA_608_ACCESSIBILITY_PATTERN = Pattern.compile("CC([1-4])=.*");
@@ -584,9 +584,21 @@ public class DashManifestParser extends DefaultHandler
                         : C.TRACK_TYPE_UNKNOWN;
   }
 
-  public void set_default_kid(String default_kid) {
-     this.defaultKid_value = default_kid;
-   }
+private static final String PREF_NAME = "PlayerPref";
+private static final String KEY_NAME = "kid";
+
+private void setKid(String kidName) {
+    SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+    SharedPreferences.Editor editor = prefs.edit();
+    editor.putString(KEY_NAME, kidName);
+    editor.apply();
+}
+
+private String getKid() {
+    SharedPreferences prefs = getSharedPreferences(PREF_NAME, MODE_PRIVATE);
+    return prefs.getString(KEY_NAME, "");
+}
+
    
   /**
    * Parses a ContentProtection element.
@@ -610,7 +622,7 @@ public class DashManifestParser extends DefaultHandler
         case "urn:mpeg:dash:mp4protection:2011":
           schemeType = xpp.getAttributeValue(null, "value");
           String defaultKid = XmlPullParserUtil.getAttributeValueIgnorePrefix(xpp, "default_KID");
-          if (!TextUtils.isEmpty(defaultKid)){
+          if (!TextUtils.isEmpty(getKid())){
               defaultKid = defaultKid_value;
           }
           if (!TextUtils.isEmpty(defaultKid)
